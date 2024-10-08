@@ -34,7 +34,7 @@ def hero_by_id(id):
     # Fetch the hero with the given id
     hero = Hero.query.filter(Hero.id == id).first()
     if hero:
-        hero_dict =hero.to_dict(rules=('id','name','super_name','hero_powers', ))
+        hero_dict =hero.to_dict(rules=('id','name','super_name','hero_powers',))
         body = hero_dict
         status = 200
     
@@ -48,7 +48,7 @@ def hero_by_id(id):
 def powers():
     powers = []
     for power in Power.query.all():
-        power_dict = power.to_dict('description','id','name',)
+        power_dict = power.to_dict(rules=('-hero_powers',))
         powers.append(power_dict)
    
     response = make_response(powers, 200)
@@ -61,7 +61,7 @@ def power_by_id(id):
     
     if power:
         # If the power exists, create a dictionary for it
-        power_dict = power.to_dict('description','id','name',)
+        power_dict = power.to_dict(rules=('-hero_powers',))
         body = power_dict
         status = 200
     else:
@@ -82,14 +82,14 @@ def patch_power_by_id(id):
        
     try:
         # Update power attributes from the form data
-        for attr in request.form:
-            setattr(power, attr, request.form.get(attr))
+        for attr in request.json:
+            setattr(power, attr, request.json.get(attr))
 
         # Add the updated power to the session and commit
         db.session.add(power)
         db.session.commit()
 
-        power_dict = power.to_dict('description','id','name',)
+        power_dict = power.to_dict(rules=('-hero_powers',))
 
         response = make_response(power_dict, 200)
         return response
@@ -101,14 +101,14 @@ def patch_power_by_id(id):
         return make_response(body, status)
 
 # Route to create a new HeroPower
-@app.route('/heropowers', methods=['POST'])
+@app.route('/hero_powers', methods=['POST'])
 def create_hero_powers():
     try:
         # Create a new HeroPower from the form data
         new_power = HeroPower(
-            strength=request.form.get('strength'),
-            power_id=request.form.get('power_id'),
-            hero_id=request.form.get('hero_id'),
+            strength=request.json.get('strength'),
+            power_id=request.json.get('power_id'),
+            hero_id=request.json.get('hero_id'),
         )
         # Add the new HeroPower to the session and commit
         db.session.add(new_power)
