@@ -1,0 +1,64 @@
+# Superheroes
+
+For this assignment we were working on an API for tracking heroes and their superpowers
+
+## Usage
+
+To use this API
+
+1. Fork and clone this repository.
+2. Run
+
+```
+$ pinenv install && pipenv shell
+```
+
+This installs the dependencies and launches the virtual environment.
+
+3. Run
+
+```
+$ cd app
+$ python3 app.py
+```
+
+This launches the local host server. You can use POSTMAN or any other platform to view, edit and view the superheroes
+
+## Models
+
+The Flask application has 3 models which inherit from:
+
+```
+(db.model , SerializerMixin)
+```
+
+1. Hero.
+   It creates the Heroes Table
+   It has the id, the hero name and the Super name(alias to the hero).
+
+This model has a relationship with the hero_powers model.
+
+2. Power Model.
+
+It creates the powers table.
+It has the id, name and the description of the powers
+It has a relationship with the hero_powers model.
+
+3.Hero_power
+
+It creates the hero_power table. It has the id and name.
+
+- A `Hero` has many `Power`s through `HeroPower`
+- A `Power` has many `Hero`s through `HeroPower`
+- A `HeroPower` belongs to a `Hero` and belongs to a `Power`
+
+## Routes
+
+The application has the following routes:
+
+- GET/heroes;- returns all the heroes
+- GET/heroes/:id ;- returns the hero of the specified id
+- GET/powers ;- returns all the powers
+- GET/powers/:id ;- returns the power of the specified id
+- PATCH/powers/:id ;- changes the powers properties.
+- POST/hero_powers ;- creates a new `HeroPower` that is associated with an existing `Power` and `Hero`.
