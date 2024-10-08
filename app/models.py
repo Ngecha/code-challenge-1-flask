@@ -19,7 +19,7 @@ class Hero(db.Model, SerializerMixin):
     super_name = db.Column(db.String)
     
     #relationship with HeroPower
-    hero_powers = db.relationship('HeroPower', backref='hero')
+    hero_powers = db.relationship('HeroPower', backref='hero', cascade='all, delete-orphan')
     
 
     serialize_rules = ('-hero_powers.hero',)
@@ -63,7 +63,7 @@ class Power(db.Model, SerializerMixin):
     description = db.Column(db.String, nullable=False)
     
     #relationship
-    hero_powers = db.relationship('HeroPower', backref='power')
+    hero_powers = db.relationship('HeroPower', backref='power', cascade='all, delete-orphan')
     
     #ensure description is at least 20 characters long
     @validates('description')

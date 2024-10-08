@@ -17,18 +17,13 @@ migrate = Migrate(app, db)
 # Initialize SQLAlchemy with the app
 db.init_app(app)
 
-# Route to get all heroes
+#get all heroes
 @app.route('/heroes')
 def heroes():
     heroes = []
-    # Fetch all heroes from the database
+    #heroes from the database
     for hero in Hero.query.all():
-        # Create a dictionary representation for each hero
-        hero_dict = {
-            "id": hero.id,
-            "name": hero.name,
-            "super_name": hero.super_name,
-        }
+        hero_dict =hero.to_dict(rules=('-hero_powers',))
         heroes.append(hero_dict)
     response = make_response(heroes, 200)
     return response
@@ -39,11 +34,7 @@ def hero_by_id(id):
     # Fetch the hero with the given id
     hero = Hero.query.filter(Hero.id == id).first()
     if hero:
-        hero_dict = {
-            "id": hero.id,
-            "name": hero.name,
-            "super_name": hero.super_name,
-        }
+        hero_dict =hero.to_dict(rules=('id','name','super_name','hero_powers', ))
         body = hero_dict
         status = 200
     
@@ -53,36 +44,24 @@ def hero_by_id(id):
         
     return make_response(body, status)
 
-# Route to get all powers
 @app.route('/powers')
 def powers():
     powers = []
-    # Fetch all powers from the database
     for power in Power.query.all():
-        # Create a dictionary representation for each power
-        power_dict = {
-            "description": power.description,
-            "id": power.id,
-            "name": power.name,
-        }
+        power_dict = power.to_dict('description','id','name',)
         powers.append(power_dict)
    
     response = make_response(powers, 200)
     return response
 
-# Route to get a power by its ID
 @app.route('/powers/<int:id>')
 def power_by_id(id):
-    # Fetch the power with the given ID
+    # Fetch the power with the given id
     power = Power.query.filter(Power.id == id).first()
     
     if power:
         # If the power exists, create a dictionary for it
-        power_dict = {
-            "description": power.description,
-            "id": power.id,
-            "name": power.name,
-        }
+        power_dict = power.to_dict('description','id','name',)
         body = power_dict
         status = 200
     else:
@@ -95,11 +74,9 @@ def power_by_id(id):
 # Route to update a power by its id using PATCH method
 @app.route('/powers/<int:id>', methods=['PATCH'])
 def patch_power_by_id(id):
-    # Fetch the power with the given ID
     power = Power.query.filter(Power.id == id).first()
-    
+    #check if power exists
     if not power:
-        # If the power doesn't exist, return an error message
         error_message = '"error":"Power not found"'
         return error_message
        
@@ -112,12 +89,7 @@ def patch_power_by_id(id):
         db.session.add(power)
         db.session.commit()
 
-        # Create a dictionary representation for the updated power
-        power_dict = {
-            "description": power.description,
-            "id": power.id,
-            "name": power.name,
-        }
+        power_dict = power.to_dict('description','id','name',)
 
         response = make_response(power_dict, 200)
         return response
@@ -142,7 +114,7 @@ def create_hero_powers():
         db.session.add(new_power)
         db.session.commit()
     
-        # Convert the new HeroPower to a dictionary using a method
+        # Convert the new HeroPower to a dictionary
         power_dict = new_power.to_dict()
     
         response = make_response(power_dict, 201)
